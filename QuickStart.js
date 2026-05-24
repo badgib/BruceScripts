@@ -1,6 +1,8 @@
 /*
     A script allowing fast access to transmit the mmost useful IR and/or RF files
     You can add new fields to it, modify them and such. In menu or by editing .conf
+
+    by gib
 */
 
 const keyboard = require('keyboard');
@@ -113,37 +115,23 @@ function removeDupes(data){
 
 function debugDisplay(debugData, bWaitForEsc){
 
-    display.fill(BRUCE_BGCOLOR);
-    display.setTextColor(BRUCE_PRICOLOR);
+    display.fill(bgColor);
+    display.setTextColor(fgColor);
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
-    if(!bWaitForEsc) pauseForInput();
-    display.fill(BRUCE_BGCOLOR);
+    if(!bWaitForEsc){
+
+        while(true){
+ 
+            if(keyboard.getAnyPress()){
+                
+                break;
+            }
+        }   
+    }
 }
 
-function pauseForInput(){
-    
-    while(true){
-        
-        if(keyboard.getEscPress()){
-            
-            break;
-        }
-        if(keyboard.getNextPress()){
-            
-            break;
-        }
-        if(keyboard.getPrevPress()){
-            
-            break;
-        }
-        if(keyboard.getSelPress()){
-            
-            break;
-        }
-    }   
-}
 
 function showSplash(){
     

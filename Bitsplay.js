@@ -3,6 +3,8 @@
     It just displays sixteen bits. Value display and randomizer can be disabled
     Simple concept, fun little late afternoon project. Napme plays on words
     BitS Play. I guess "Y" should also be capitalised. Oh well.
+
+    by gib
 */
 
 const dialog = require("dialog");

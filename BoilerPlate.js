@@ -1,6 +1,7 @@
 /*
-    A script allowing fast access to transmit the mmost useful IR and/or RF files
-    You can add new fields to it, modify them and such. In menu or by editing .conf
+    A set of useful starting functions
+    
+    by gib
 */
 
 const keyboard = require('keyboard');
@@ -44,8 +45,18 @@ function debugDisplay(debugData, bWaitForEsc){
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
-    if(!bWaitForEsc) pauseForInput();
+    if(!bWaitForEsc){
+
+        while(true){
+ 
+            if(keyboard.getAnyPress()){
+                
+                break;
+            }
+        }   
+    }
 }
+
 
 function showSplash(){
     

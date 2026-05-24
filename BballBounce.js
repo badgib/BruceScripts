@@ -1,3 +1,12 @@
+/*
+    Bouncy balls! With physics! And mass! 
+    Next/prev adds/removes balls
+    select nudges random ball
+    escape quits
+    
+    by gib
+*/
+
 const display = require("display");
 const keyboard = require("keyboard");
 
@@ -153,7 +162,7 @@ function handleInput(){
     }
     if(keyboard.getSelPress()){
 
-        nudgeRandomBall(100);
+        nudgeRandomBall(1000);
     }
 }
 

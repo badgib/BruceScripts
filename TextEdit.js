@@ -4,6 +4,8 @@
     Add a nice rolling number wheel for faster linenumber input
     Basically 0-9 repeated, select saves digit. Oh, also empty
     or otherwise denoted spot for finishing teh num input
+
+    by gib
 */
 
 const display = require("display");

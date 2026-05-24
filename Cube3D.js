@@ -1,3 +1,9 @@
+/*
+    3D cube. Just a proof of concept, might be useful later on
+
+    by gib
+*/
+
 const display = require("display");
 
 const SCREEN_WIDTH = display.width();
@@ -120,21 +126,9 @@ function createCube(size){
 
 function handleInput(){
 
-    if(keyboard.getEscPress()){
+    if(keyboard.getAnyPress()){
 
         bDoRun = false;
-    }
-    if(keyboard.getNextPress()){
-
-        
-    }
-    if(keyboard.getPrevPress()){
-
-        
-    }
-    if(keyboard.getSelPress()){
-
-        
     }
 }
 

@@ -1,6 +1,8 @@
 /*
     Just a small script that displays a screen full of pixels. One pixel at a time.
     At least the last time I tried - it looked pretty nice. Or maybe I'm seeing things.
+
+    by gib
 */
 const w = display.width();
 const h = display.height();

@@ -28,30 +28,21 @@ function debugDisplay(debugData, bWaitForEsc){
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
-    if(!bWaitForEsc) pauseForInput();
+    if(!bWaitForEsc){
+
+        while(true){
+ 
+            if(keyboard.getAnyPress()){
+                
+                break;
+            }
+        }   
+    }
 }
 
 function pauseForInput(){
     
-    while(true){
-        
-        if(keyboard.getEscPress()){
-            
-            break;
-        }
-        if(keyboard.getNextPress()){
-            
-            break;
-        }
-        if(keyboard.getPrevPress()){
-            
-            break;
-        }
-        if(keyboard.getSelPress()){
-            
-            break;
-        }
-    }   
+    
 }
 
 function showSplash(){

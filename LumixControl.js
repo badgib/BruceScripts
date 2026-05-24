@@ -7,7 +7,7 @@
     One thing for sure - the wifi pass is just lower-case MAC with 'a' as a prefix. That's it. So might be useful
     Anywho Most of the tinkering is done, time to sniff more for the desktop app
 
-    R.K. aka gib
+    by gib
 */
 
 const display = require('display');
@@ -16,13 +16,11 @@ const wifi = require('wifi');
 const dialog = require('dialog');
 const storage = require('storage');
 
-const settingsLocation = {fs: "sd", path: "/BrumixFiles/brumix.conf"};
+const settingsLocation = {fs: "sd", path: "/GibsFiles/LumixControl.conf"};
 const recModeCommands = ["Capture photo", "Start recording", "Playback"];
 const playModeCommands = ["Download file", "Go back"];
 const displayWidth = display.width();
 const displayHeight = display.height();
-const fgColor = BRUCE_PRICOLOR;
-const bgColor = BRUCE_BGCOLOR;
 
 var cameraIP = "";
 var cameraMAC = "";
@@ -36,14 +34,14 @@ var bAddFlare = false;
 var bCmdChanged = true;
 var bIsRecording = false;
 var bSelectedPlay = false;
-var selectedRec = 0;
-var lastPollTime = 0;
-var pollInterval = 2000;
 var lastMode = "rec";
 var lastRec = "";
 var lastTemp = "";
 var lastBatt = "";
 var shotsLeft = "";
+var selectedRec = 0;
+var lastPollTime = 0;
+var pollInterval = 2000;
 var totalImages = 0;
 var currentImage = 0;
 var imgArrayIndex = 0;
@@ -57,11 +55,11 @@ var fileNamesDict = {};
 var thumbnailArray = [];
 var filesReadFromDir = [];
 
-display.setTextColor(fgColor);
-display.fill(bgColor);
-storage.mkdir("/BrumixFiles");
-storage.mkdir("/BrumixFiles/cache");
-storage.mkdir("/BrumixFiles/downloads");
+display.setTextColor(BRUCE_PRICOLOR);
+display.fill(BRUCE_BGCOLOR);
+storage.mkdir("/GibsFiles");
+storage.mkdir("/GibsFiles/cache");
+storage.mkdir("/GibsFiles/downloads");
 
 function generateBody(startingIndex, amount){
 
@@ -90,18 +88,16 @@ function getImageNames(amount){
     try{
         response = wifi.httpFetch("http://" + cameraIP + "/cam.cgi?mode=get_content_info");
         totalImages = Number(parseValue(response.body, "total_content_number"));
-        var filesInDirectory = storage.readdir("/BrumixFiles/cache/", {withFileTypes: true});
+        var filesInDirectory = storage.readdir("/GibsFiles/cache/", {withFileTypes: true});
         for(var i = 0; i < filesInDirectory.length; i++){
 
             filesReadFromDir.push(filesInDirectory[i].name);
         }
         filesReadFromDir = removeDupes(filesReadFromDir);
     }
-    catch(gerr){
+    catch(ergin){
         
-        dialog.error("Content error: " + jebacError, true);
-        delay(10000);
-        dialog.displayText(gerr);
+        dialog.error("getImageNames: " + ergin, true);
     }
     try{
         var POSTBody = generateBody(totalImages - amount, amount);
@@ -120,22 +116,22 @@ function getImageNames(amount){
         imgArrayIndex = thumbnailArray.length - 1;
         return imageNames;
     }
-    catch(terr){
+    catch(erpb){
 
-        dialog.error("POST error: " + terr, false);
+        dialog.error("POST error: " + erpb, false);
     }
 }
 
 function fetchFullFile(name){
 
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     delay(10);
     var doWeDownload = dialog.message("Do you want to download\n" + name + "?", {left: "No", right: "Yes"});
     if(doWeDownload === "right"){
 
         fetchBinaryFIle(thumbnailArray[imgArrayIndex], "cache/", true);
         fetchBinaryFIle(name, "downloads/");
-        display.fill(bgColor);
+        display.fill(BRUCE_BGCOLOR);
     }
     displayImage(imgArrayIndex);
 }
@@ -159,14 +155,14 @@ function fetchBinaryFIle(name, destination, override){
         if(!bDidWeFindIt || override){
 
             var imgBin = wifi.httpFetch("http://" + cameraIP + ":50001/" + name, {binaryResponse: true, headers:{"Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "Apache-HttpClient"}});
-            currentFullPath = {fs: "sd", path: "/BrumixFiles/" + destination + name};
+            currentFullPath = {fs: "sd", path: "/GibsFiles/" + destination + name};
             storage.write(currentFullPath, imgBin.body, "write");
             filesReadFromDir.push(name);
         }
     }
-    catch(fetrrr){
+    catch(erfbf){
         
-        dialog.error("Error fetching img: " + fetrrr, true);
+        dialog.error("Error fetching img: " + erfbf, true);
     }
 }
 
@@ -177,9 +173,9 @@ function fetchCommand(command){
 
         return wifi.httpFetch("http://" + cameraIP + command);
     }
-    catch(err){
+    catch(erfc){
 
-        dialog.error("Fetch error: " + err);
+        // dialog.error("Fetch error: " + erfc);
     }
 }
 
@@ -264,7 +260,7 @@ function playCommands(index){
         
         default:
 
-            dialog.error("Something went wrong " + o);
+            dialog.error("Something went wrong " + index);
             break;
     }
 }
@@ -300,7 +296,7 @@ function recCommands(index){
             break;
         default:
 
-            dialog.error("Something went wrong " + u, true);
+            dialog.error("Something went wrong " + index, true);
             break;
     }
 }
@@ -358,20 +354,20 @@ function displayImage(index){
 
     try{
 
-        display.fill(bgColor);
+        display.fill(BRUCE_BGCOLOR);
         currentImage = thumbnailArray[index];
         fetchBinaryFIle(currentImage, "cache/");
-        currentFullPath = {fs: "sd", path: "/BrumixFiles/cache/" + currentImage};
+        currentFullPath = {fs: "sd", path: "/GibsFiles/cache/" + currentImage};
         dialog.drawStatusBar();
         display.drawJpg(currentFullPath, 80, 30);
         display.setCursor(83, 150);
-        display.setTextColor(fgColor);
+        display.setTextColor(BRUCE_PRICOLOR);
         display.setTextSize(2.5);
         display.println(currentImage);
     }
-    catch(derr){
+    catch(erdi){
 
-        display.error("image error: " + derr);
+        display.error("image error: " + erdi);
     }
 }
 
@@ -396,7 +392,7 @@ function parseValue(data, tag) {
     }
     catch(evv){
 
-        return null
+        return null;
     }
 }
 
@@ -468,9 +464,9 @@ function autoPoll(){
 
             var response = fetchCommand("/cam.cgi?mode=getstate");
         }
-        catch(err){
+        catch(erap){
             
-            display.println("Error polling: " + err);
+            display.println("Error polling: " + erap);
         }
         if(response.body){
             
@@ -495,10 +491,10 @@ function autoPoll(){
 
 function drawGUI(){
 
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     dialog.drawStatusBar();
     display.setCursor(0, 30);
-    display.setTextColor(fgColor);
+    display.setTextColor(BRUCE_PRICOLOR);
     display.setTextSize(2.5);
     if(bAddFlare) drawShape();
     if(lastMode === "rec"){
@@ -586,23 +582,28 @@ function loadSettings(location){
 
 function tryConnecting(ssid, pass){
 
-    try{
+    if(ssid !== "" || pass !== ""){
 
-        wifi.connect(ssid, 10, pass);
-    }
-    catch(eeee){
-
-        dialog.error("Couldn't connect." + eeee);
+        try{
+            
+            dialog.info("Connecting to " + ssid);
+            wifi.connect(ssid, 10, pass);
+            display.fill(BRUCE_BGCOLOR);
+        }
+        catch(ertc){
+            
+            dialog.error("Failed connecting to " + ertc);
+        }
     }
 }
 
 function newWanConnection(){
 
-    var newScan = wifi.scan();
+    const newScan = wifi.scan();
     var SSIDList = [];
     for(var i = 0; i < newScan.length; i++){
         
-        SSIDList.push(newScan[i].SSID);
+        SSIDList.push(newScan[i]["SSID"]);
     }
     SSIDList.push("hidden");
     var selectedSSID = dialog.choice(SSIDList);
@@ -645,7 +646,7 @@ function wanMode(){
 
 function chooseMode(){
 
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     if(!wifi.connected()){
         
         // STUPID! Returns: "Direct" or "right"
@@ -678,7 +679,7 @@ function checkIPs(){
 
 function getCameraCreds(){
 
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     var IPManual = savedIPs.concat();
     var MACManual = savedMACs.concat();
     IPManual.push("enter new");
@@ -715,9 +716,9 @@ function doTheHandshake(){
             return false;
         }
     }
-    catch(erre){
+    catch(erhs){
 
-        dialog.error("handshake failed: " + erre, true);
+        // dialog.error("Handshake failed: " + erhs, false);
     }
 }
 
@@ -727,7 +728,7 @@ function tryRestoring(){
         
         loadSettings(settingsLocation);
     }
-    catch(erra){
+    catch(ertr){
 
         restoreFromFile();
     }
@@ -736,7 +737,7 @@ function tryRestoring(){
 function restoreFromFile(){
 
     try{
-        display.fill(bgColor);
+        display.fill(BRUCE_BGCOLOR);
         dialog.drawStatusBar();
         var doLoadSettings = dialog.message("Config file not found.\nDo you have one?", {left: "No", right: "Yes"}); // STUPID! Returns: "No" or "right"
         if(doLoadSettings === "right"){
@@ -745,9 +746,9 @@ function restoreFromFile(){
             loadSettings(selectedPath);
         }
     }
-    catch(eww){
+    catch(errff){
 
-        dialog.error("Failed to load from file: " + selectedPath + " : " + eww);
+        dialog.error("restoreFromFile: " + selectedPath + " - " + errff);
     }
 }
 

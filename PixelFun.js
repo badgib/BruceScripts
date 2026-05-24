@@ -5,6 +5,8 @@
     putting this public but oh well, I'm pretty sure I'm not the only one who
     figured out it'd be funny to mess with some random colours and such.
     Anywho, I don't think I'll be prodding at it anymore, works good as it is.
+    
+    by gib
 */
 
 const display = require("display");
