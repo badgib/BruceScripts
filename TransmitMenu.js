@@ -346,7 +346,6 @@ function modifyItem(){
         return;
     }
     var tmpName = dialog.prompt(tmpCommand, 14, "Input user-friendly name for the file");
-    // removeProperOne(selectedMode);
     selectedMode.splice(selectedIndex, 1);
     putInProperPlace(tmpFile, tmpName, tmpExt);
     saveFullConfig();

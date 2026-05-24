@@ -66,7 +66,6 @@ function numberLines(arrayOfLines){
         }
     }
     return arrayOfLines
-
 }
 
 function askIfNewFile(){
