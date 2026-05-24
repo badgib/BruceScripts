@@ -77,10 +77,8 @@ Mesh.prototype.draw = function(){
         p = this.rotateX(p.x, p.y, p.z, this.rotX);
         p = this.rotateY(p.x, p.y, p.z, this.rotY);
         p = this.rotateZ(p.x, p.y, p.z, this.rotZ);
-
         projected.push(this.project(p));
     }
-
     for(var i = 0; i < this.edges.length; i++){
 
         var edge = this.edges[i];
@@ -120,7 +118,6 @@ function createCube(size){
     return new Mesh(vertices, edges);
 }
 
-
 function handleInput(){
 
     if(keyboard.getAnyPress()){
@@ -135,8 +132,6 @@ function main(){
     cube.rotationSpeedX = 0.01;
     cube.rotationSpeedY = 0.02;
     cube.z = 100;
-
-    
     while(bDoRun){
         
         var currentTime = now();
@@ -146,8 +141,6 @@ function main(){
         display.fill(BRUCE_BGCOLOR);
         cube.update(deltaTime);
         cube.draw();
-        // updateBalls(deltaTime);
-        // drawBalls();
 
         // ms - FPS: 6 ~ 165, 7 ~ 144, 8 ~ 120, 11 ~ 90, 16 ~ 60, 20 = 50, 21 ~ 48, 33 ~ 30, 40 = 25, 42 ~ 23.976, 66 ~ 15
         delay(16);

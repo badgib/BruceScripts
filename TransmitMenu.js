@@ -554,7 +554,7 @@ function parseIRFile(originalFile){
     }
     var IRFileName = originalFile.split("/").pop();
     var newFilePath = IR_CACHE + selectedIRCommand + "_" + IRFileName;
-    storage.write({fs: "sd", path: newFilePath}, readyForSave);
+    storage.write({fs: "sd", path: newFilePath}, readyForSave, "write");
     return [newFilePath, selectedIRCommand];
 }
 
