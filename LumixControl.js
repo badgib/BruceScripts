@@ -86,7 +86,7 @@ function getImageNames(amount){
     if(lastMode === "rec") fetchCommand("/cam.cgi?mode=camcmd&value=playmode");
 
     try{
-        response = wifi.httpFetch("http://" + cameraIP + "/cam.cgi?mode=get_content_info");
+        var response = wifi.httpFetch("http://" + cameraIP + "/cam.cgi?mode=get_content_info");
         totalImages = Number(parseValue(response.body, "total_content_number"));
         var filesInDirectory = storage.readdir("/GibsFiles/cache/", {withFileTypes: true});
         for(var i = 0; i < filesInDirectory.length; i++){
@@ -582,7 +582,7 @@ function loadSettings(location){
 
 function tryConnecting(ssid, pass){
 
-    if(ssid !== "" || pass !== ""){
+    if(ssid !== "" && pass !== ""){
 
         try{
             
@@ -597,21 +597,45 @@ function tryConnecting(ssid, pass){
     }
 }
 
-function newWanConnection(){
+function debugDisplay(debugData, bWaitForEsc){
 
-    const newScan = wifi.scan();
+    display.fill(BRUCE_BGCOLOR);
+    display.setTextColor(BRUCE_PRICOLOR);
+    display.setCursor(0, 0);
+    display.setTextSize(2);
+    display.println(debugData);
+    if(!bWaitForEsc){
+
+        while(true){
+ 
+            if(keyboard.getAnyPress()){
+                
+                break;
+            }
+        }   
+    }
+}
+
+function getSSID(){
+
     var SSIDList = [];
-    for(var i = 0; i < newScan.length; i++){
+    var scanResults = wifi.scan();
+    for(var i = 0; i < scanResults.length; i++){
         
-        SSIDList.push(newScan[i]["SSID"]);
+        SSIDList.push(scanResults[i]["SSID"]);
     }
     SSIDList.push("hidden");
-    var selectedSSID = dialog.choice(SSIDList);
-    if(selectedSSID === "hidden"){
+    var chosenSSID = dialog.choice(SSIDList);
+    if(chosenSSID === "hidden"){
 
-        selectedSSID = dialog.prompt("", 32, "SSID");
+        var chosenSSID = keyboard.keyboard("", 32, "SSID");
     }
-    var selectedPass = dialog.prompt("", 64, "Password");
+}
+
+function newWanConnection(){
+
+    var selectedSSID = getSSID();
+    var selectedPass = keyboard.keyboard("", 64, "Password");
     savedSSIDs.push(selectedSSID);
     savedPasses.push(selectedPass);
     savedSSIDs = removeDupes(savedSSIDs);
@@ -621,17 +645,18 @@ function newWanConnection(){
 
 function directMode(){
 
+    if(wifi.connected()) wifi.disconnect();
     if(directSSID === ""){
 
-        directSSID = dialog.prompt("", 32, "SSID");
-        directPass = dialog.prompt("", 64, "Password");
+        directSSID = getSSID();
+        directPass = keyboard.keyboard("", 64, "Password");
     }
     tryConnecting(directSSID, directPass);
 }
 
 function wanMode(){
 
-    if(savedSSIDs.length > 0){
+    if(savedSSIDs.length > 0 && savedSSIDs[0] !== ""){
 
         for(var i = 0; i < savedSSIDs.length; i++){
 
@@ -647,7 +672,7 @@ function wanMode(){
 function chooseMode(){
 
     display.fill(BRUCE_BGCOLOR);
-    if(!wifi.connected()){
+    // if(!wifi.connected()){
         
         // STUPID! Returns: "Direct" or "right"
         if(dialog.message("Choose mode of operation\nfor your camera,\nplease", {left: "Direct", right: "Use WAN"}) === "Direct"){
@@ -658,23 +683,31 @@ function chooseMode(){
 
             wanMode();
         }
-    }
+    // }
 }
 
 function checkIPs(){
 
-    var bShookHand = false;
-    for(var ip = 0; ip < savedIPs.length; ip++){
+    if(wifi.connected()){
 
-        cameraIP = savedIPs[ip];
-        for(var mac = 0; mac < savedMACs.length; mac++){
-
-            cameraMAC = savedMACs[mac];
-            bShookHand = doTheHandshake();
-            if(bShookHand) break;
+        if(savedIPs.length > 0){
+            
+            var bShookHand = false;
+            for(var ip = 0; ip < savedIPs.length; ip++){
+                
+                cameraIP = savedIPs[ip];
+                for(var mac = 0; mac < savedMACs.length; mac++){
+                    
+                    cameraMAC = savedMACs[mac];
+                    dialog.info("Trying IP: " + cameraIP + " MAC: " + cameraMAC);
+                    bShookHand = doTheHandshake();
+                    if(bShookHand) break;
+                }
+            }
+            return bShookHand;
         }
     }
-    return bShookHand;
+    else return false;
 }
 
 function getCameraCreds(){
@@ -687,12 +720,12 @@ function getCameraCreds(){
     cameraIP = dialog.choice(IPManual);
     if(cameraIP === "enter new"){
         
-        cameraIP = dialog.prompt("192.168.54.1", 16, "Camera IP");
+        cameraIP = keyboard.keyboard("192.168.54.1", 16, "Camera IP");
     }
     cameraMAC = dialog.choice(MACManual);
     if(cameraMAC === "enter new"){
     
-        cameraMAC = dialog.prompt("00AA11BB22CC", 16, "Camera MAC");
+        cameraMAC = keyboard.keyboard("00AA11BB22CC", 16, "Camera MAC");
         cameraMAC = to_upper_case(cameraMAC);
     }
     savedIPs.push(cameraIP);
@@ -755,14 +788,21 @@ function restoreFromFile(){
 function initialise(){
 
     tryRestoring();
-    chooseMode();
-    var q = checkIPs();
-    if(!q){
+    var isDirect = chooseMode();
+    var didItGoThrough = false;
+    if(!checkIPs() && wifi.connected()){
 
         getCameraCreds();
-        doTheHandshake();
+        didItGoThrough = doTheHandshake();
     }
-    saveSettings();
+    if(!wifi.connected() && !didItGoThrough){
+
+        dialog.error("Failed to connect. Check settings and try again", false);
+    }
+    else{
+
+        saveSettings();
+    }
 }
 
 function mainLoop(){
