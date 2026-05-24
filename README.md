@@ -55,3 +55,27 @@ dialog.message(str, {left: "LEFT", center: "CENTER" right: "RIGHT"}) should alwa
 ### IR SpamAll from file menu
 
 Both of those commands suffer from the same issue. They don't transmit anything. Tried that on a couple files and it's refusing to transmit anything in those modes of operation. I had to work around it by reading the files and sending it via serial.cmd(ir tx) which might fail when someone will try to use a raw file, I'm sure
+
+## Undocumented?
+
+### display.drawArc(x, y, r, ir, startAngle, endAngle, fgCol, bgCol, smooth), draw(Fill)Triangle(x1,y1,x2,y2,x3,y3, c), 
+
+### display.setBrightness() and getBrightness
+
+Those work as suspected, restore isn't yet clear but I didn't play around too much with it
+
+### display.drawFastHLine(x, y, w/h, c) and drawFastVLine
+
+Those also work as intended. Seem great for fast horizontal and vertical ones, good to know
+
+### drawWideLine(x1, y1, x2, y2, w, c)
+
+This one isn't the greatest. It's slow, aliasing is bad and I don't recommend using it at all, yet
+
+### display.drawTriangle(x1, y1, x2, y2, x3, y3, c) and drawFillTriangle
+
+Those seem to work a-ok and draw nice triangles
+
+### keyboard.numKeyboard
+
+Like name suggests - it spawns a nice numpad
