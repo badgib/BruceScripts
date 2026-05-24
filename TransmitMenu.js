@@ -181,6 +181,7 @@ function handleEditing(){
     else{
         
         selectedMenu = subGHzMenu;
+        selectedMode = "sub";
     }
     bIsEditing = true;
     drawGrid(selectedMenu);
@@ -204,7 +205,7 @@ function selectMenuType(){
     }
     else{
         
-        selectedMode = "ir";
+        selectedMode = "sub";
         selectedMenu = subGHzMenu;
         if(!bIsEditing) selectedIndex = 0;
     }
@@ -274,10 +275,14 @@ function selectEditTool(){
      
         repositionItem();
     }
-    else{
+    else if(selectedTool === "delete"){
 
         removeProperOne(selectedMode);
         saveFullConfig();
+    }
+    else{
+
+
     }
     bUpdatedIndex = true;
     bIsEditing = false;
@@ -288,21 +293,25 @@ function modifyItem(){
 
     var tmpFile = dialog.pickFile();
     var tmpExt = tmpFile.split(".")[1];
+    var tmpCommand = "";
     if(tmpExt === "ir"){
 
-        tmpFile = parseIRFile(tmpFile);
+        var tmpTmp = parseIRFile(tmpFile);
+        tmpFile = tmpTmp[0];
+        tmpCommand = tmpTmp[1];
     }
     else if(tmpExt === "sub"){
 
-
+        tmpCommand = selectedMenu[selectedIndex]["name"];
     }
     else{
         
         dialog.error("Wrong file: " + tmpFile);
         return;
     }
-    var tmpName = dialog.prompt(selectedMenu[selectedIndex]["name"], 14, "Input user-friendly name for the file");
-    removeProperOne(selectedMode);
+    var tmpName = dialog.prompt(tmpCommand, 14, "Input user-friendly name for the file");
+    // removeProperOne(selectedMode);
+    selectedMode.splice(selectedIndex, 1);
     putInProperPlace(tmpFile, tmpName, tmpExt);
     saveFullConfig();
 }
@@ -311,20 +320,23 @@ function addNewItem(){
 
     var addFile = dialog.pickFile();
     var addExt = addFile.split(".")[1];
+    var addCommand = "";
     if(addExt === "ir"){
 
-        addFile = parseIRFile(addFile);
+        var addReturn = parseIRFile(addFile);
+        addFile = addReturn[0];
+        addCommand = addReturn[1];
     }
     else if(addExt === "sub"){
 
+        addCommand = selectedMenu[selectedIndex]["name"];
     }
     else{
 
         dialog.error("Wrong file: " + addFile);
-        debugDisplay(addExt);
         return;
     }
-    var addName = dialog.prompt("", 14, "Input user-friendly name for the file");
+    var addName = dialog.prompt(addCommand, 14, "Input user-friendly name for the file");
     putInProperPlace(addFile, addName, addExt);
     addItemToConfig(addFile, addName, addExt);
 }
@@ -332,9 +344,8 @@ function addNewItem(){
 function repositionItem(){
 
     var itemToMove = selectedMenu.splice(selectedIndex, 1)[0];
-    removeProperOne(itemToMove["mode"]);
     var chosenIndex = keyboard.numKeyboard("", 8, "Enter position");
-    if(Number(chosenIndex) > selectedMenu.length) chosenIndex = selectedMenu.length - 1;
+    if(Number(chosenIndex) > selectedMenu.length) chosenIndex = selectedMenu.length;
     reorderProperArray(chosenIndex, itemToMove);
     saveFullConfig();
 }
@@ -379,9 +390,12 @@ function firstConfig(){
 
     var firstFile = dialog.pickFile();
     var firstExt = firstFile.split(".")[1];
+    var firstCommand = "";
     if(firstExt === "ir"){
 
-        firstFile = parseIRFile(firstFile);
+        var firstTemp = parseIRFile(firstFile)
+        firstFile = firstTemp[0];
+        firstCommand = firstTemp[1];
     }
     else if(firstExt === "sub"){
 
@@ -391,7 +405,7 @@ function firstConfig(){
         dialog.error("Wrong file: " + firstFile);
         return;
     }
-    var firstName = dialog.prompt("", 14, "Input user-friendly name for the file");
+    var firstName = dialog.prompt(firstCommand, 14, "Input user-friendly name for the file");
     putInProperPlace(firstFile, firstName, firstExt);
     addItemToConfig(firstFile, firstName, firstExt);
 }
@@ -527,20 +541,21 @@ function parseIRFile(originalFile){
         }
     }
     var selectedIRCommand = dialog.choice(names);
+    selectedIRCommand = selectedIRCommand.replace(" ", "");
     header = header.join("\n#");
     var readyForSave = header + "\n#\n";
     for(var i = 0; i < result.length; i++){
         
-        if(result[i].indexOf("name:" + selectedIRCommand) === 0){
+        if(result[i].indexOf("name: " + selectedIRCommand) === 0){
             
             readyForSave += result[i];
             break;
         }
     }
     var IRFileName = originalFile.split("/").pop();
-    var newFilePath = IR_CACHE + selectedIRCommand.replace(" ", "") + "_" + IRFileName;
+    var newFilePath = IR_CACHE + selectedIRCommand + "_" + IRFileName;
     storage.write({fs: "sd", path: newFilePath}, readyForSave);
-    return newFilePath;
+    return [newFilePath, selectedIRCommand];
 }
 
 main();
