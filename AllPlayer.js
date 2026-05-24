@@ -40,11 +40,6 @@ function debugDisplay(debugData, bWaitForEsc){
     }
 }
 
-function pauseForInput(){
-    
-    
-}
-
 function showSplash(){
     
     display.fill(bgColor);
