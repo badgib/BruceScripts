@@ -126,13 +126,14 @@ function showSplash(){
     display.setTextSize(4);
     display.println("    Hello.")
     display.setTextSize(2);
-    display.println("\nThis is a first-time splash. This script will now prepare" +
-        "your .conf file for you and you won't see this splash again. Have fun!");
+    display.println("\nThis is a first-time thing\nThis script will now pre-\npare " +
+        "your .conf file for\nyou and you won't see this\nsplash again. Hope it'll \n" +
+        "be useful. Have fun!");
     pauseForInput();
     display.fill(BRUCE_BGCOLOR);
     display.setCursor(0, 0);
-    display.println("\n\nYou'll be asked to provide at least one file so you can" + 
-        "start with something. You can add more items later on");
+    display.println("\n\nYou'll be asked to provide\nfirst file so you can\n" + 
+        "start with something.\nYou can add more items\nusing the edit menu.\n\nby gib");
     pauseForInput();
     display.fill(BRUCE_BGCOLOR);
 }
