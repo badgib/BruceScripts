@@ -10,6 +10,7 @@ const storage = require('storage');
 const display = require("display");
 const dialog = require('dialog');
 const subghz = require('subghz');
+const serial = require('serial');
 const ir = require('ir');
 
 const DISP_WIDTH = display.width();
@@ -144,8 +145,43 @@ function runSelectedCommand(){
 
         try{
 
-            ir.transmitFile(selectedMenu[selectedIndex]["file"]);
-            display.drawFillRect(0, 100, DISP_WIDTH, DISP_HEIGHT - 100, BRUCE_BGCOLOR);
+            // I think that ir.transmitFile() and serial.cmd("ir tx_from_file") are broken.
+            // It also seems that "SpamAll" when used from file browser. The same file
+            // with only one command doesn't send when "spammed" but sends with no issues
+            // when "Choose cmd" is used. So for now I'm going to work around it
+
+            // ir.transmitFile(selectedMenu[selectedIndex]["file"], true);
+            // var maybeSerial = selectedMenu[selectedIndex]["file"].replace(/[^\x20-\x7E]/g, "");
+            // serial.cmd("ir tx_from_file " + maybeSerial);
+
+            var fileContents = storage.read(selectedMenu[selectedIndex]["file"]);
+            var lastBlock = fileContents.split("#");
+            var tempProtocol = "";
+            var tempAddress = "";
+            var tempCommand = "";
+            lastBlock = lastBlock[lastBlock.length - 1];
+            lastBlock = lastBlock.split("\n");
+            for(var i = 0; i < lastBlock.length; i++){
+                
+                if(lastBlock[i].indexOf("protocol") === 0){
+
+                    tempProtocol = lastBlock[i].split(": ");
+                    tempProtocol = tempProtocol[1];
+                }
+                else if(lastBlock[i].indexOf("address") === 0){
+
+                    tempAddress = lastBlock[i].split(": ");
+                    tempAddress = tempAddress[1];
+                    tempAddress = tempAddress.replace(/ /g, "");
+                }
+                else if(lastBlock[i].indexOf("command") === 0){
+
+                    tempCommand = lastBlock[i].split(": ");
+                    tempCommand = tempCommand[1];
+                    tempCommand = tempCommand.replace(/ /g, "");
+                }
+            }
+            serial.cmd("ir tx " + tempProtocol + " " + tempAddress + " " + tempCommand);
             dialog.info("Done!");
         }
         catch(erir){
@@ -532,7 +568,7 @@ function parseIRFile(originalFile){
 
             result.push(block);
             block = block.split("\n");
-            var extractedName = block[0].split(":");
+            var extractedName = block[0].split(": ");
             names.push(extractedName[1]);
         }
         else{
@@ -541,9 +577,8 @@ function parseIRFile(originalFile){
         }
     }
     var selectedIRCommand = dialog.choice(names);
-    selectedIRCommand = selectedIRCommand.replace(" ", "");
-    header = header.join("\n#");
-    var readyForSave = header + "\n#\n";
+    header = header.join("\r\n#");
+    var readyForSave = header + "\r\n#\r\n";
     for(var i = 0; i < result.length; i++){
         
         if(result[i].indexOf("name: " + selectedIRCommand) === 0){
