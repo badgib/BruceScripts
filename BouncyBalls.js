@@ -13,9 +13,6 @@ const keyboard = require("keyboard");
 const SCREEN_WIDTH = display.width();
 const SCREEN_HEIGHT = display.height();
 
-const BG_COLOR = BRUCE_BGCOLOR;
-const FG_COLOR = BRUCE_PRICOLOR;
-
 var bDoRun = true;
 var lastTime = now();
 var balls = [];
@@ -139,7 +136,7 @@ function updateBalls(deltaTime){
 
 function drawBalls(){
 
-    display.fill(BG_COLOR);
+    display.fill(BRUCE_BGCOLOR);
     for(var i = 0; i < balls.length; i++){
 
         balls[i].draw();

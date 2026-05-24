@@ -9,9 +9,6 @@ const display = require("display");
 const SCREEN_WIDTH = display.width();
 const SCREEN_HEIGHT = display.height();
 
-const BG_COLOR = BRUCE_BGCOLOR;
-const FG_COLOR = BRUCE_PRICOLOR;
-
 var bDoRun = true;
 var lastTime = now();
 
@@ -25,7 +22,7 @@ function Mesh(vertices, edges){
     this.rotX = 0;
     this.rotY = 0;
     this.rotZ = 0;
-    this.color = FG_COLOR;
+    this.color = BRUCE_PRICOLOR;
     this.rotationSpeedX = 0;
     this.rotationSpeedY = 0;
     this.rotationSpeedZ = 0;
@@ -146,7 +143,7 @@ function main(){
         var deltaTime = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
         handleInput();
-        display.fill(BG_COLOR);
+        display.fill(BRUCE_BGCOLOR);
         cube.update(deltaTime);
         cube.draw();
         // updateBalls(deltaTime);

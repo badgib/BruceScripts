@@ -13,7 +13,7 @@ const dialog = require('dialog');
 const DISP_WIDTH = display.width();
 const DISP_HEIGHT = display.height();
 
-const CONF_FILE = {fs: "sd", path: "/quickStart.conf"};
+const CONF_FILE = {fs: "sd", path: "/GibsFiles/quickStart.conf"};
 
 display.setTextColor(BRUCE_PRICOLOR);
 display.fill(BRUCE_BGCOLOR);
@@ -21,14 +21,12 @@ display.fill(BRUCE_BGCOLOR);
 display.setCursor(0, 0);
 display.setTextSize(2.5);
 
-// var items = ["HUJadsdadsaasd", "WsdsadasdJ", "ZBOdJ", "TsdaWOJ", "MOJdd", "LUJ", "WUJ", "ZBOJ", "TWOJ", "MOJ", "LUJ", "WUJ", "ZBOJ", "TWOJ", "MOJ", "LUJ", "WUJ", "HUJadsdadsaasd", "WsdsadasdJ", "ZBOdJ", "TsdaWOJ", "ZBOJ", "TWOJ", "MOJ", "LUJ"];
-
 var configMenu = ["Add item", "Edit item", "Delete item"];
 var IRMenu = [];
 var subGHzMenu = [];
 var selectedMenu = [];
 
-var editMenuItems = [{}];
+var editMenuItems = [];
 var selectedIndex = 0;
 var scrollOffset = 0;
 
@@ -115,23 +113,24 @@ function removeDupes(data){
 
 function debugDisplay(debugData, bWaitForEsc){
 
-    display.fill(bgColor);
-    display.setTextColor(fgColor);
+    display.fill(BRUCE_BGCOLOR);
+    display.setTextColor(BRUCE_PRICOLOR);
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
-    if(!bWaitForEsc){
-
-        while(true){
- 
-            if(keyboard.getAnyPress()){
-                
-                break;
-            }
-        }   
-    }
+    if(!bWaitForEsc) pauseForInput();
 }
 
+function pauseForInput(){
+
+    while(true){
+     
+        if(keyboard.getAnyPress()){
+            
+            break;
+        }
+    }   
+}
 
 function showSplash(){
     
@@ -149,11 +148,6 @@ function showSplash(){
         "start with something. You can add more items later on");
     pauseForInput();
     display.fill(BRUCE_BGCOLOR);
-}
-
-function selectTool(){
-
-    var selectedTool = dialog.message("");
 }
 
 function handleEditing(){
@@ -205,14 +199,17 @@ function loadConfig(){
     }
     catch(e1){
 
-        debugDisplay("e1: " + e1);
         return 0
     }
 }
 
 function getConfig(){
 
-    if(!loadConfig()) createConfig();
+    if(!loadConfig()){
+        
+        showSplash();
+        createConfig();
+    }
     else{
 
         var loopArr = [];
@@ -228,12 +225,13 @@ function getConfig(){
                 subGHzMenu.push({file:loopArr["file"], name:loopArr["name"], mode:loopArr["mode"]});
             }
         }
+        return true;
     }
 }
 
-function editConfig(config, index, newFile, newName, bDelete){
+function editConfig(){
 
-    var selectedTool = dialog.choice({"Add new one": "add_new", "Modify selected": "modify", "Delete it": "delete"});
+    var selectedTool = dialog.choice({"Add new one": "add_new", "Modify selected": "modify", "Move": "move", "Delete it": "delete"});
     if(selectedTool === "add_new"){
 
         addNewItem();
@@ -241,6 +239,10 @@ function editConfig(config, index, newFile, newName, bDelete){
     else if(selectedTool === "modify"){
 
         modifyItem();
+    }
+    else if(selectedTool === "move"){
+     
+        moveItem();
     }
     else{
 
@@ -258,6 +260,7 @@ function modifyItem(){
     var tmpName = dialog.prompt(selectedMenu[selectedIndex]["name"], 14, "Input user-friendly name for the file");
     delay(100);
     var tmpMode = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
+    selectedMenu.splice(selectedIndex, 1);
     saveConfig(tmpFile, tmpName, handleBrokenRight(tmpMode));
 }
 
@@ -268,6 +271,12 @@ function addNewItem(){
     delay(100);
     // var addMode = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
     saveConfig(addFile, addName, handleBrokenRight(selectedMenu[selectedIndex]["mode"]));
+}
+
+function moveItem(){
+
+    drawGrid(selectMenu);
+
 }
 
 function createConfig(){
@@ -365,7 +374,6 @@ function drawGrid(items){
 
 function main(){
 
-    // showSplash();
     display.setTextSize(0);
     getConfig();
     selectMenu();

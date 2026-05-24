@@ -11,13 +11,10 @@ const storage = require('storage');
 const display = require("display");
 const dialog = require('dialog');
 
-const fgColor = BRUCE_PRICOLOR;
-const bgColor = BRUCE_BGCOLOR;
-
 const melodyFile = {fs: "sd", path:"/melodies.rttts"};
 
-display.setTextColor(fgColor);
-display.fill(bgColor);
+display.setTextColor(BRUCE_PRICOLOR);
+display.fill(BRUCE_BGCOLOR);
 
 function loadFile(name){
 
@@ -56,7 +53,7 @@ function playSong(tune){
 
 function displayStuff(what){
     
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     dialog.drawStatusBar();
     display.setTextSize(2.5);
     display.setCursor(0, 50);

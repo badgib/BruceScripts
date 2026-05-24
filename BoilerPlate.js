@@ -9,11 +9,8 @@ const storage = require('storage');
 const display = require("display");
 const dialog = require('dialog');
 
-const fgColor = BRUCE_PRICOLOR;
-const bgColor = BRUCE_BGCOLOR;
-
-display.setTextColor(fgColor);
-display.fill(bgColor);
+display.setTextColor(BRUCE_PRICOLOR);
+display.fill(BRUCE_BGCOLOR);
 
 display.setCursor(0, 0);
 display.setTextSize(2.5);
@@ -40,8 +37,8 @@ function handleInput(){
 
 function debugDisplay(debugData, bWaitForEsc){
 
-    display.fill(bgColor);
-    display.setTextColor(fgColor);
+    display.fill(BRUCE_BGCOLOR);
+    display.setTextColor(BRUCE_PRICOLOR);
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
@@ -60,7 +57,7 @@ function debugDisplay(debugData, bWaitForEsc){
 
 function showSplash(){
     
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     display.setCursor(0, 0);
     display.setTextSize(4);
     display.println("   Hello.")
@@ -80,7 +77,7 @@ function loadFile(name){
 
 function displayStuff(what){
     
-    display.fill(bgColor);
+    display.fill(BRUCE_BGCOLOR);
     dialog.drawStatusBar();
     display.setTextSize(2.5);
     display.setCursor(0, 30);
