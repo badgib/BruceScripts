@@ -14,7 +14,7 @@ Is an app that allows you to put all your frequently used IR and SubGHz codes in
 
 ### AllPlayer
 
-Is a fun little RTTTS (think Nokia ringtones) files. It can read eithe a directory of files or one file with melodies (one per line). A gimmick? Yes. Useful? Kinda - you can always make people laugh when you play a melody from doom or mario... (NokiaPlayer was a first version, it sneaked in so I'm leaving it here but it's not good, nor updated)
+Is a fun little RTTTS (think Nokia ringtones) files. It can read eithe a directory of files or one file with melodies (one per line). A gimmick? Yes. Useful? Kinda - you can always make people laugh when you play a melody from doom or mario... (NokiaPlayer was a first version, it sneaked in so I'm leaving it here but it's not updated, nor good)
 
 ### TextEdit
 
@@ -24,7 +24,7 @@ Very basic text editor. I figured out that it might be just good enough when in 
 
 This one is fun! Yes, it's just a bunch of bouncing balls... But those have physics! Mass! They collide! And all that with pretty decent framerate too! Use next to spawn more, prev to despawn random, select to nudge random, esc to quit. This was also an exercise that was fun! Go ahead, try playing with it
 
-### SphereSpam/PixelFun/TrippyShark
+### ShapeSpam/PixelFun/TrippyShark
 
 Basically the same codebase but with different intents. Plans changed so now they're all in here. Another exercise but with interesting results. I wanted to go through the display library and experiment and this is the outcome. Randomness is fun
 
