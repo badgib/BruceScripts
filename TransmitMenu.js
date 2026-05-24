@@ -9,6 +9,8 @@ const keyboard = require('keyboard');
 const storage = require('storage');
 const display = require("display");
 const dialog = require('dialog');
+const subghz = require('subghz');
+const ir = require('ir');
 
 const DISP_WIDTH = display.width();
 const DISP_HEIGHT = display.height();
@@ -21,20 +23,19 @@ display.fill(BRUCE_BGCOLOR);
 display.setCursor(0, 0);
 display.setTextSize(2.5);
 
-var configMenu = ["Add item", "Edit item", "Delete item"];
-var IRMenu = [];
-var subGHzMenu = [];
-var selectedMenu = [];
-
-var editMenuItems = [];
-var selectedIndex = 0;
-var scrollOffset = 0;
-
 const cols = 3;
 const buttonW = 100;
 const buttonH = 20;
 const padding = 3;
 const radius = 10;
+
+var IRMenu = [];
+var subGHzMenu = [];
+var selectedMenu = [];
+
+var selectedIndex = 0;
+var scrollOffset = 0;
+
 
 var bDoRun = true;
 var bUpdatedIndex = false;
@@ -58,7 +59,7 @@ function handleInput(){
             else{
 
                 bIsEditing = false;
-                selectMenu();
+                selectMenuType();
             }
         }
     }
@@ -84,18 +85,17 @@ function handleInput(){
         if(bInMenu && selectedMenu !== [] && !bIsEditing){
 
             bUpdatedIndex = true;
+            runSelectedCommand();
         }
         else{
 
-            editConfig();
-            getConfig();
-            IRMenu = removeDupes(IRMenu);
-            subGHzMenu = removeDupes(subGHzMenu);
+            selectEditTool();
         }
     }
 }
 
 function removeDupes(data){
+
     var seen = {};
     var result = [];
 
@@ -137,16 +137,48 @@ function showSplash(){
     display.fill(BRUCE_BGCOLOR);
     display.setCursor(0, 0);
     display.setTextSize(4);
-    display.println("   Hello.")
+    display.println("    Hello.")
     display.setTextSize(2);
-    display.println("This is a first-time splash. This script will now prepare" +
+    display.println("\nThis is a first-time splash. This script will now prepare" +
         "your .conf file for you and you won't see this splash again. Have fun!");
     pauseForInput();
     display.fill(BRUCE_BGCOLOR);
     display.setCursor(0, 0);
-    display.println("You'll be asked to provide at least one file so you can" + 
+    display.println("\n\nYou'll be asked to provide at least one file so you can" + 
         "start with something. You can add more items later on");
     pauseForInput();
+    display.fill(BRUCE_BGCOLOR);
+}
+
+function runSelectedCommand(){
+
+    if(selectedMenu[selectedIndex]["mode"] === "IR"){
+
+        try{
+
+            ir.transmitFile(selectedMenu[selectedIndex]["file"]);
+            display.drawFillRect(0, 100, DISP_WIDTH, DISP_HEIGHT - 100, BRUCE_BGCOLOR);
+            dialog.info("Done!");
+        }
+        catch(erir){
+
+            dialog.error("IR transmit error: " + erir);
+        }
+    }
+    else{
+        
+        try{
+    
+            dialog.info("Transmitting...");
+            subghz.transmitFile(selectedMenu[selectedIndex]["file"]);
+            dialog.info("Done!");
+        }
+        catch(ersg){
+    
+            dialog.error("SubGHz transmit error: " + ersg);
+        }
+    }
+    delay(500);
     display.fill(BRUCE_BGCOLOR);
 }
 
@@ -167,24 +199,24 @@ function handleEditing(){
     
 }
 
-function selectMenu(){
+function selectMenuType(){
     
     display.fill(BRUCE_BGCOLOR);
     var chosenMenu = dialog.message("Choose menu:", {left: "IR", center: "Edit", right: "SubGHz"});
     if(chosenMenu === "IR"){
         
         selectedMenu = IRMenu;
-        selectedIndex = 0;
+        if(!bIsEditing) selectedIndex = 0;
     }
     else if(chosenMenu === "Edit"){
         
         handleEditing();
-        selectedIndex = 0;
+        if(!bIsEditing) selectedIndex = 0;
     }
     else{
         
         selectedMenu = subGHzMenu;
-        selectedIndex = 0;
+        if(!bIsEditing) selectedIndex = 0;
     }
     bUpdatedIndex = true;
     display.fill(BRUCE_BGCOLOR);
@@ -193,9 +225,8 @@ function selectMenu(){
 function loadConfig(){
 
     try{
-
-        var x = storage.read(CONF_FILE)
-        return x;
+        
+        return storage.read(CONF_FILE);
     }
     catch(e1){
 
@@ -203,12 +234,12 @@ function loadConfig(){
     }
 }
 
-function getConfig(){
+function parseConfig(){
 
     if(!loadConfig()){
         
         showSplash();
-        createConfig();
+        firstConfig();
     }
     else{
 
@@ -218,20 +249,20 @@ function getConfig(){
             loopArr = JSON.parse(tempConf[i], null, 2);
             if(loopArr["mode"] === "IR"){
 
-                IRMenu.push({file:loopArr["file"], name:loopArr["name"], mode:loopArr["mode"]});
+                IRMenu.push({file: loopArr["file"], name: loopArr["name"], mode: loopArr["mode"]});
             }
             else{
 
-                subGHzMenu.push({file:loopArr["file"], name:loopArr["name"], mode:loopArr["mode"]});
+                subGHzMenu.push({file: loopArr["file"], name: loopArr["name"], mode: loopArr["mode"]});
             }
         }
         return true;
     }
 }
 
-function editConfig(){
+function selectEditTool(){
 
-    var selectedTool = dialog.choice({"Add new one": "add_new", "Modify selected": "modify", "Move": "move", "Delete it": "delete"});
+    var selectedTool = dialog.choice({"Add new one": "add_new", "Modify selected": "modify", "Reposition": "reposition", "Delete it": "delete"});
     if(selectedTool === "add_new"){
 
         addNewItem();
@@ -240,17 +271,17 @@ function editConfig(){
 
         modifyItem();
     }
-    else if(selectedTool === "move"){
+    else if(selectedTool === "reposition"){
      
-        moveItem();
+        repositionItem();
     }
     else{
 
-        selectedMenu.splice(selectedIndex, 1);
+        removeProperOne(selectedMenu[selectedIndex]["mode"]);
+        saveFullConfig();
     }
     bUpdatedIndex = true;
     bIsEditing = false;
-
     display.fill(BRUCE_BGCOLOR);
 }
 
@@ -260,8 +291,11 @@ function modifyItem(){
     var tmpName = dialog.prompt(selectedMenu[selectedIndex]["name"], 14, "Input user-friendly name for the file");
     delay(100);
     var tmpMode = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
-    selectedMenu.splice(selectedIndex, 1);
-    saveConfig(tmpFile, tmpName, handleBrokenRight(tmpMode));
+    removeProperOne(selectedMenu[selectedIndex]["mode"]);
+    putInProperPlace(tmpFile, tmpName, tmpMode);
+    // addItemToConfig(tmpFile, tmpName, handleBrokenRight(tmpMode));
+    saveFullConfig();
+    // drawGrid(selectedMenu);
 }
 
 function addNewItem(){
@@ -269,24 +303,70 @@ function addNewItem(){
     var addFile = dialog.pickFile();
     var addName = dialog.prompt("", 14, "Input user-friendly name for the file");
     delay(100);
-    // var addMode = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
-    saveConfig(addFile, addName, handleBrokenRight(selectedMenu[selectedIndex]["mode"]));
+    var addMode = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
+
+    putInProperPlace(addFile, addName, addMode);
+    addItemToConfig(addFile, addName, handleBrokenRight(addMode));
+    // saveFullConfig();
 }
 
-function moveItem(){
+function repositionItem(){
 
-    drawGrid(selectMenu);
-
+    var itemToMove = selectedMenu.splice(selectedIndex, 1)[0];
+    removeProperOne(itemToMove["mode"]);
+    var chosenIndex = keyboard.numKeyboard("", 8, "Enter position");
+    if(Number(chosenIndex) > selectedMenu.length) chosenIndex = selectedMenu.length - 1;
+    reorderProperArray(chosenIndex, itemToMove);
+    // putInProperPlace(itemToMove["file"], itemToMove["name"], itemToMove["mode"]);
+    saveFullConfig();
+    // drawGrid(selectedMenu);
 }
 
-function createConfig(){
+function reorderProperArray(index, item){
+
+    // item = JSON.stringify(item, null, 2);
+    if(item["mode"] === "IR"){
+
+        IRMenu.splice(index, 0, item);
+    }
+    else{
+        
+        subGHzMenu.splice(index, 0, item);
+    }
+}
+
+function removeProperOne(removeMode){
+    
+    if(removeMode === "IR"){
+    
+        IRMenu.splice(selectedIndex, 1);
+    }
+    else{
+
+        subGHzMenu.splice(selectedIndex, 1);
+    }
+}
+
+function putInProperPlace(placeFile, placeName, placeMode){
+
+    if(placeMode === "IR"){
+        
+        IRMenu.push({file: placeFile, name: placeName, mode: placeMode});
+    }
+    else{
+
+        subGHzMenu.push({file: placeFile, name: placeName, mode: placeMode});
+    }
+}
+
+function firstConfig(){
 
     var firstFile = dialog.pickFile();
     var firstName = dialog.prompt("", 14, "Input user-friendly name for the file");
     delay(100);
     var irOrSubGhz = dialog.message("Is it IR or SubGHz?", {left: "IR", right: "SubGHz"});
-
-    saveConfig(firstFile, firstName, handleBrokenRight(irOrSubGhz));
+    putInProperPlace(firstFile, firstName, handleBrokenRight(irOrSubGhz));
+    addItemToConfig(firstFile, firstName, handleBrokenRight(irOrSubGhz));
 }
 
 function handleBrokenRight(thisToBool){
@@ -298,7 +378,28 @@ function handleBrokenRight(thisToBool){
     else return thisToBool;
 }
 
-function saveConfig(fileName, friendlyName, irOrSub){
+function saveFullConfig(){
+
+    var saveArr = [];
+    var saveStr = "";
+    for(var i = 0; i < IRMenu.length; i++){
+        
+        if(saveArr[i] !== {}){
+            
+            saveArr.push(JSON.stringify(IRMenu[i], null, 2));
+        }
+    }
+    for(var i = 0; i < subGHzMenu.length; i++){
+        if(saveArr[i] !== {}){
+            
+            saveArr.push(JSON.stringify(subGHzMenu[i], null, 2));
+        }
+    }
+    saveStr = saveArr.join("\n")
+    storage.write(CONF_FILE, saveStr, "write");
+}
+
+function addItemToConfig(fileName, friendlyName, irOrSub){
 
     var tempObj = {file: fileName, name: friendlyName, mode: irOrSub};
     var tempStr = JSON.stringify(tempObj, null, 2);
@@ -375,8 +476,8 @@ function drawGrid(items){
 function main(){
 
     display.setTextSize(0);
-    getConfig();
-    selectMenu();
+    parseConfig();
+    selectMenuType();
     while(bDoRun){
         
         // if(!bInMenu) selectMenu();
@@ -388,6 +489,5 @@ function main(){
         }
     }
 }
-
 
 main();

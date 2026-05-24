@@ -720,7 +720,7 @@ function getCameraCreds(){
     cameraIP = dialog.choice(IPManual);
     if(cameraIP === "enter new"){
         
-        cameraIP = keyboard.keyboard("192.168.54.1", 16, "Camera IP");
+        cameraIP = keyboard.numKeyboard("192.168.54.1", 16, "Camera IP");
     }
     cameraMAC = dialog.choice(MACManual);
     if(cameraMAC === "enter new"){
