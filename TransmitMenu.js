@@ -16,10 +16,10 @@ const ir = require('ir');
 const DISP_WIDTH = display.width();
 const DISP_HEIGHT = display.height();
 
-const CONF_FILE = {fs: "sd", path: "/GibsFiles/TransmitMenu.conf"};
-const IR_CACHE = "/GibsFiles/IRCache/";
-storage.mkdir("/GibsFiles");
-storage.mkdir("/GibsFiles/IRCache");
+const CONF_FILE = {fs: "sd", path: "/config/TransmitMenu.conf"};
+const IR_CACHE = "/config/IRCache/";
+storage.mkdir("/config");
+storage.mkdir("/config/IRCache");
 
 display.setTextColor(BRUCE_PRICOLOR);
 display.fill(BRUCE_BGCOLOR);

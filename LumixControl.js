@@ -16,7 +16,7 @@ const wifi = require('wifi');
 const dialog = require('dialog');
 const storage = require('storage');
 
-const settingsLocation = {fs: "sd", path: "/GibsFiles/LumixControl.conf"};
+const settingsLocation = {fs: "sd", path: "/config/LumixControl.conf"};
 const recModeCommands = ["Capture photo", "Start recording", "Playback"];
 const playModeCommands = ["Download file", "Go back"];
 const displayWidth = display.width();
@@ -81,12 +81,14 @@ function generateBody(startingIndex, amount){
 
 function getImageNames(amount){
 
-    bAddFlare = random(0, 100) < 88 ? true : false;
+    bAddFlare = random(0, 100) > 88 ? true : false;
+    var response = wifi.httpFetch("http://" + cameraIP + "/cam.cgi?mode=get_content_info");
+    if(lastMode === "rec"){
 
-    if(lastMode === "rec") fetchCommand("/cam.cgi?mode=camcmd&value=playmode");
-
+        fetchCommand("/cam.cgi?mode=camcmd&value=playmode");
+        delay(100);
+    }
     try{
-        var response = wifi.httpFetch("http://" + cameraIP + "/cam.cgi?mode=get_content_info");
         totalImages = Number(parseValue(response.body, "total_content_number"));
         var filesInDirectory = storage.readdir("/GibsFiles/cache/", {withFileTypes: true});
         for(var i = 0; i < filesInDirectory.length; i++){
@@ -100,7 +102,17 @@ function getImageNames(amount){
         dialog.error("getImageNames: " + ergin, true);
     }
     try{
-        var POSTBody = generateBody(totalImages - amount, amount);
+        var negativePrevention = 0;
+        if(totalImages - amount < 0){
+
+            negativePrevention = 0;
+            amount = totalImages;
+        }
+        else{
+
+            negativePrevention = totalImages - amount;
+        }
+        var POSTBody = generateBody(negativePrevention, amount);
         var response = wifi.httpFetch("http://" + cameraIP + ":60606/Server0/CDS_control", {
             
             method: "POST",
@@ -612,7 +624,7 @@ function debugDisplay(debugData, bWaitForEsc){
                 
                 break;
             }
-        }   
+        }
     }
 }
 
@@ -701,7 +713,8 @@ function checkIPs(){
                     cameraMAC = savedMACs[mac];
                     dialog.info("Trying IP: " + cameraIP + " MAC: " + cameraMAC);
                     bShookHand = doTheHandshake();
-                    if(bShookHand) break;
+                    dialog.info(bShookHand, true);
+                    if(bShookHand) return bShookHand;
                 }
             }
             return bShookHand;
