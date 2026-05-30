@@ -13,7 +13,7 @@ display.setTextColor(BRUCE_PRICOLOR);
 display.fill(BRUCE_BGCOLOR);
 
 display.setCursor(0, 0);
-display.setTextSize(2.5);
+display.setTextSize(2);
 
 function handleInput(){
         
@@ -23,15 +23,12 @@ function handleInput(){
     }
     if(keyboard.getNextPress()){
         
-        break;
     }
     if(keyboard.getPrevPress()){
         
-        break;
     }
     if(keyboard.getSelPress()){
         
-        break;
     }
 }
 
@@ -42,18 +39,19 @@ function debugDisplay(debugData, bWaitForEsc){
     display.setCursor(0, 0);
     display.setTextSize(0);
     display.println(debugData);
-    if(!bWaitForEsc){
-
-        while(true){
- 
-            if(keyboard.getAnyPress()){
-                
-                break;
-            }
-        }   
-    }
+    if(!bWaitForEsc) pauseForInput();
 }
 
+function pauseForInput(){
+
+    while(true){
+     
+        if(keyboard.getAnyPress()){
+            
+            break;
+        }
+    }   
+}
 
 function showSplash(){
     
@@ -62,9 +60,7 @@ function showSplash(){
     display.setTextSize(4);
     display.println("   Hello.")
     display.setTextSize(2);
-    display.println("App will attempt to load\nfiles from /rttts. If not\n" +
-        "found you still can load a\nmultiline file or select\n" +
-        "some other folder, you'll\nget a choice.\n");
+    display.println("This is just a boilerplate");
 }
 
 function loadFile(name){
@@ -81,7 +77,7 @@ function displayStuff(what){
     dialog.drawStatusBar();
     display.setTextSize(2.5);
     display.setCursor(0, 30);
-    display.println("Playing:\n" + what + "\n\nEnjoy your melody!");
+    display.println(what);
 }
 
 function main(){
@@ -93,3 +89,4 @@ function main(){
         bDoRun = handleInput();
     }
 }
+main();

@@ -16,6 +16,10 @@ Is an app that allows you to put all your frequently used IR and SubGHz codes in
 
 Is a fun little RTTTS (think Nokia ringtones) files. It can read eithe a directory of files or one file with melodies (one per line). A gimmick? Yes. Useful? Kinda - you can always make people laugh when you play a melody from doom or mario... (NokiaPlayer was a first version, it sneaked in so I'm leaving it here but it's not updated, nor good)
 
+### Goblin
+
+Is a game in which your main goal is to annoy humans and finally win the uneven fight against them. There are two modes, move and act. You can switch between them by tapping esc key. Prev/next move between options in each mode. To quit hold esc for > 3s. Goal of the game is 20 chaos and 5 nest. Good luck!
+
 ### PoolShark
 
 A tiny version of billiards. It's in its infancy and many things need to be added etc. But core gameplay seems to work - you can hit the cue ball, it can hit other balls, they scatter all around and even can go into the pockets! What are you waiting for? Just give it a try! You'll be astonished what can be done on such a tiny device

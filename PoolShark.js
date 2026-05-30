@@ -259,12 +259,10 @@ function handleInput(){
 
             aimAngle -= 0.02;
         }
-
         if(keyboard.getNextPress()){
 
             aimAngle += 0.02;
         }
-
         if(keyboard.getSelPress()){
 
             gameState = "POWER";
@@ -276,22 +274,18 @@ function handleInput(){
 
             aimPower += 60;
         }
-
         if(keyboard.getPrevPress()){
 
             aimPower -= 60;
         }
-
         if(aimPower < 0){
 
             aimPower = 0;
         }
-
         if(aimPower > maxPower){
 
             aimPower = maxPower;
         }
-
         if(keyboard.getSelPress()){
 
             shoot();
@@ -306,21 +300,17 @@ function draw(){
 
         pockets[i].draw();
     }
-
     for(var i = 0; i < balls.length; i++){
 
         balls[i].draw();
     }
-
     if(gameState !== "ROLLING" && cueBall){
 
         var dir = getAimDir();
         display.drawLine(cueBall.x, cueBall.y, cueBall.x + dir.x * 80, cueBall.y + dir.y * 80, BRUCE_PRICOLOR);
-
         display.drawLine(cueBall.x - dir.x * (28 + aimPower * 0.03), cueBall.y - dir.y * (28 + aimPower * 0.03),
             cueBall.x - dir.x * 12, cueBall.y - dir.y * 12, 65535);
     }
-
     if(gameState === "POWER"){
 
         var barWidth = 120;
@@ -340,7 +330,6 @@ function createRack(){
     var spacing = 19;
     var rows = 4;
     var colorIndex = 0;
-
     for(var row = 0; row < rows; row++){
 
         for(var col = 0; col <= row; col++){
@@ -375,5 +364,4 @@ function main(){
         delay(16);
     }
 }
-
 main();

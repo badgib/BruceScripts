@@ -64,7 +64,7 @@ function handleInput(){
     }
     if(keyboard.getSelPress() && !didChange){
         
-        var promptedVal = dialog.prompt(to_string(doRandoms ? random(0, 65535) : number), 8, "Give me a number!");
+        var promptedVal = keyboard.numKeyboard(to_string(doRandoms ? random(0, 65535) : number), 8, "Give me a number!");
         number = Number(promptedVal);
         didChange = true;
     }
