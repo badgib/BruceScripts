@@ -71,7 +71,7 @@ function showSplash(){
     display.setTextSize(4);
     display.println("   Hello.")
     display.setTextSize(2);
-    display.println("Welcome to the\nChannelGraph app\n\n\n\nby gib");
+    display.println("Welcome to the\nChannelGraph app\n\n\n\n\nby gib");
     display.setTextSize(0);
 }
 
@@ -140,8 +140,6 @@ function displayNetworkList(list, nameLen){
         display.print(rssi);
         display.setTextColor(BRUCE_PRICOLOR);
     }
-
-    // display.setCursor()
 }
 
 function delayTheScans(){

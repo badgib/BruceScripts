@@ -356,7 +356,6 @@ function recCommands(index){
 function populateObject(data){
 
     var dtMap = {};
-
     for(var i = 0; i < data.length; i++){
 
         var tmpFile = data[i];
@@ -375,7 +374,7 @@ function populateObject(data){
             dtMap[tmpID] = tmpFile;
         }
     }
-    for(var j = 0; j < data.length; j++){
+    for(var i = 0; i < data.length; i++){
 
         var tmpFile2 = data[j];
         var prefix2 = tmpFile2.substr(0, 2);
@@ -837,6 +836,57 @@ function restoreFromFile(){
     }
 }
 
+function drawSplash(){
+
+    display.fill(BRUCE_BGCOLOR);
+    for(var i = 0; i < displayHeight; i += 5){
+
+        var c = display.color(10 + i / 3, 20 + i / 4, 40 + i / 2);
+        display.drawFillRect(0, i, displayWidth, 5, c);
+    }
+    for(var i = 0; i < 120; i++){
+
+        var sx = Math.floor(random() * displayWidth);
+        var sy = Math.floor(random() * (displayHeight / 2));
+        var sc = display.color(255, 255, 255);
+        display.drawPixel(sx, sy, sc);
+    }
+    var sunX = displayWidth - 60;
+    var sunY = 50;
+    for(var i = 0; i < 25; i++){
+
+        display.drawCircle(sunX, sunY, i * 2, display.color(255, 180 - i * 4, 20));
+    }
+    var baseY = displayHeight * 0.65;
+    display.drawFillTriangle(0, baseY, displayWidth * 0.2, baseY - 90, displayWidth * 0.4, baseY, display.color(30, 60, 30));
+    display.drawFillTriangle(displayWidth * 0.25, baseY, displayWidth * 0.5, baseY - 120, displayWidth * 0.75, baseY, display.color(25, 55, 25));
+    display.drawFillTriangle(displayWidth * 0.6, baseY, displayWidth * 0.8, baseY - 80, displayWidth, baseY, display.color(35, 70, 35));
+    display.drawFillTriangle(displayWidth * 0.22, baseY - 70, displayWidth * 0.2, baseY - 90, displayWidth * 0.18, baseY - 70, display.color(240, 240, 240));
+    display.drawFillTriangle(displayWidth * 0.5, baseY - 100, displayWidth * 0.5, baseY - 120, displayWidth * 0.48, baseY - 100, display.color(240, 240, 240));
+    display.drawFillTriangle(displayWidth * 0.78, baseY - 60, displayWidth * 0.8, baseY - 80, displayWidth * 0.82, baseY - 60, display.color(240, 240, 240));
+    display.drawFillRect(0, baseY, displayWidth, displayHeight - baseY, display.color(20, 80, 30));
+    for(var i = 0; i < displayHeight; i += 3){
+
+        var rw = 40 + Math.sin(i / 10) * 20;
+        display.drawFillRect(displayWidth * 0.45 - rw / 2, baseY + i / 2, rw, 3, display.color(30, 120, 180));
+    }
+
+    function tree(tx, ty){
+
+        display.drawFillRect(tx, ty, 6, 20, display.color(80, 50, 20));
+        display.drawFillCircle(tx + 3, ty - 5, 10, display.color(20, 100, 40));
+        display.drawFillCircle(tx - 2, ty - 12, 10, display.color(20, 110, 50));
+        display.drawFillCircle(tx + 8, ty - 12, 10, display.color(20, 90, 40));
+    }
+    for(var i = 0; i < 15; i++){
+
+        var tx = Math.floor(random() * displayWidth);
+        var ty = baseY + 10 + Math.floor(random() * (displayHeight - baseY - 30));
+        tree(tx, ty);
+    }
+    display.drawRect(0, 0, displayWidth - 1, displayHeight - 1, display.color(200, 200, 200));
+}
+
 function initialise(){
 
     tryRestoring();
@@ -859,6 +909,7 @@ function initialise(){
 
 function mainLoop(){
 
+    drawSplash();
     initialise();
     try{
         while(bDoRun){
