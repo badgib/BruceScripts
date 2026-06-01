@@ -3,9 +3,11 @@
     It displays some basic information and has all the connectivity tidbits baked in to allow for hassleless
     operation, no matter your setting. It creates a conf file for ease of repeated uses.
 
+    It even allows you to download the full-resolution files directly to your device!
+
     MAC address might be completely useless, might probe useful later. Still need to figure out rest of the APIs
     One thing for sure - the wifi pass is just lower-case MAC with 'a' as a prefix. That's it. So might be useful
-    Anywho Most of the tinkering is done, time to sniff more for the desktop app
+    Anywho most of the tinkering is done, time to sniff more for the desktop app
 
     by gib
 */
@@ -57,9 +59,8 @@ var filesReadFromDir = [];
 
 display.setTextColor(BRUCE_PRICOLOR);
 display.fill(BRUCE_BGCOLOR);
-storage.mkdir("/GibsFiles");
-storage.mkdir("/GibsFiles/cache");
-storage.mkdir("/GibsFiles/downloads");
+storage.mkdir("/config/");
+storage.mkdir("/downloads/cache/");
 
 function generateBody(startingIndex, amount){
 
@@ -86,11 +87,10 @@ function getImageNames(amount){
     if(lastMode === "rec"){
 
         fetchCommand("/cam.cgi?mode=camcmd&value=playmode");
-        delay(100);
     }
     try{
         totalImages = Number(parseValue(response.body, "total_content_number"));
-        var filesInDirectory = storage.readdir("/GibsFiles/cache/", {withFileTypes: true});
+        var filesInDirectory = storage.readdir("/downloads/cache/", {withFileTypes: true});
         for(var i = 0; i < filesInDirectory.length; i++){
 
             filesReadFromDir.push(filesInDirectory[i].name);
@@ -141,14 +141,53 @@ function fetchFullFile(name){
     var doWeDownload = dialog.message("Do you want to download\n" + name + "?", {left: "No", right: "Yes"});
     if(doWeDownload === "right"){
 
-        fetchBinaryFIle(thumbnailArray[imgArrayIndex], "cache/", true);
-        fetchBinaryFIle(name, "downloads/");
+        fetchBinaryFile(name, "", true);
         display.fill(BRUCE_BGCOLOR);
     }
     displayImage(imgArrayIndex);
 }
 
-function fetchBinaryFIle(name, destination, override){
+function downloadFile(url, destination, displayDialog){
+
+    if(destination === undefined) destination = "/downloads/" + url.split('/').pop();
+    if(displayDialog === undefined) displayDialog = false;
+    var headResp = wifi.httpFetch(url, {method: "HEAD"});
+    var isOk = to_string(headResp.status);
+    if(isOk.indexOf("2") === 0){
+
+        try{
+
+            storage.remove({fs: "sd", path: destination});
+        }
+        catch(erdf){
+
+        }
+        var size = Number(headResp.headers["X-FILE_SIZE"]);
+        var chunkSize = 64 * 1024;
+        var offset = 0;
+        if(displayDialog) dialog.info(size + " bytes");
+        while(offset < size){
+            
+
+            var end = Math.min(offset + chunkSize - 1, size - 1);
+            var chunkResp = wifi.httpFetch(url, {"headers": {"Connection": "Keep-Alive", "Range": "bytes=" + offset + "-" + end}});
+            storage.write({fs: "sd", path: destination}, chunkResp.body, "append");
+            offset += chunkSize;
+            autoPoll();
+            if(displayDialog){
+                
+                var percent = Math.floor(offset / size * 100);
+                percent = percent < 100 ? percent : 100;
+                dialog.info("Downloading: " + percent + "%");
+            }
+        }
+        return true;
+    }
+    else return false;
+}
+
+
+function fetchBinaryFile(name, destination, override){
 
     if(override === undefined) override = false;
     try{
@@ -166,9 +205,10 @@ function fetchBinaryFIle(name, destination, override){
         }
         if(!bDidWeFindIt || override){
 
-            var imgBin = wifi.httpFetch("http://" + cameraIP + ":50001/" + name, {binaryResponse: true, headers:{"Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "Apache-HttpClient"}});
-            currentFullPath = {fs: "sd", path: "/GibsFiles/" + destination + name};
-            storage.write(currentFullPath, imgBin.body, "write");
+            // var imgBin = wifi.httpFetch("http://" + cameraIP + ":50001/" + name, {binaryResponse: true, headers:{"Connection": "Keep-Alive", "Accept-Encoding": "gzip", "User-Agent": "Apache-HttpClient"}});
+            // currentFullPath = {fs: "sd", path: "/downloads/" + destination + name};
+            // storage.write(currentFullPath, imgBin.body, "write");
+            downloadFile("http://" + cameraIP + ":50001/" + name, "/downloads/" + destination + name, override);
             filesReadFromDir.push(name);
         }
     }
@@ -368,8 +408,8 @@ function displayImage(index){
 
         display.fill(BRUCE_BGCOLOR);
         currentImage = thumbnailArray[index];
-        fetchBinaryFIle(currentImage, "cache/");
-        currentFullPath = {fs: "sd", path: "/GibsFiles/cache/" + currentImage};
+        fetchBinaryFile(currentImage, "cache/", false);
+        currentFullPath = {fs: "sd", path: "/downloads/cache/" + currentImage};
         dialog.drawStatusBar();
         display.drawJpg(currentFullPath, 80, 30);
         display.setCursor(83, 150);
@@ -543,7 +583,6 @@ function drawGUI(){
 
         for(var i = 0; i < playModeCommands.length; i++){
 
-            // var f = bSelectedPlay ? 1 : 0;
             if(i === (bSelectedPlay ? 1 : 0)){
 
                 display.println("> " + playModeCommands[i]);
@@ -668,23 +707,27 @@ function directMode(){
 
 function wanMode(){
 
-    if(savedSSIDs.length > 0 && savedSSIDs[0] !== ""){
-
-        for(var i = 0; i < savedSSIDs.length; i++){
-
-            tryConnecting(savedSSIDs[i], savedPasses[i]);
+    if(!wifi.connected()){
+        
+        
+        if(savedSSIDs.length > 0 && savedSSIDs[0] !== ""){
+            
+            for(var i = 0; i < savedSSIDs.length; i++){
+                
+                tryConnecting(savedSSIDs[i], savedPasses[i]);
+            }
+        }
+        else{
+            
+            newWanConnection();
         }
     }
-    else{
-
-        newWanConnection();
-    }
+    else checkIPs();
 }
 
 function chooseMode(){
 
     display.fill(BRUCE_BGCOLOR);
-    // if(!wifi.connected()){
         
         // STUPID! Returns: "Direct" or "right"
         if(dialog.message("Choose mode of operation\nfor your camera,\nplease", {left: "Direct", right: "Use WAN"}) === "Direct"){
@@ -695,7 +738,6 @@ function chooseMode(){
 
             wanMode();
         }
-    // }
 }
 
 function checkIPs(){
@@ -762,10 +804,7 @@ function doTheHandshake(){
             return false;
         }
     }
-    catch(erhs){
-
-        // dialog.error("Handshake failed: " + erhs, false);
-    }
+    catch(erhs){}
 }
 
 function tryRestoring(){
