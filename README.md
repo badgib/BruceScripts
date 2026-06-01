@@ -52,6 +52,10 @@ This one just represents a dec value in binary using some graphics, one of the f
 
 Another simple exercise, name should tell it all. There's not much more to it
 
+## [Reference](reference.md)
+
+Pretty much every function available in the Bruce interpreter. Sorted alphabetically
+
 ## Bugs found
 
 ### dialog.message()
@@ -63,7 +67,3 @@ dialog.message(str, {left: "LEFT", center: "CENTER" right: "RIGHT"}) should alwa
 ### IR SpamAll from file menu
 
 Both of those commands suffer from the same issue. They don't transmit anything. Tried that on a couple files and it's refusing to transmit anything in those modes of operation. I had to work around it by reading the files and sending it via serial.cmd(ir tx) which might fail when someone will try to use a raw file, I'm sure
-
-## [Reference](reference.md)
-
-Pretty much every function available in the Bruce interpreter. Sorted alphabetically
