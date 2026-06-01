@@ -15,11 +15,13 @@ display.fill(BRUCE_BGCOLOR);
 display.setCursor(0, 0);
 display.setTextSize(2);
 
+var bDoRun = true;
+
 function handleInput(){
         
     if(keyboard.getEscPress()){
         
-        return false;
+        bDoRun = false;
     }
     if(keyboard.getNextPress()){
         
@@ -82,11 +84,10 @@ function displayStuff(what){
 
 function main(){
 
-    var bDoRun = true;
     showSplash();
     while(bDoRun){
 
-        bDoRun = handleInput();
+        handleInput();
     }
 }
 main();
