@@ -71,7 +71,8 @@ function showSplash(){
     display.setTextSize(4);
     display.println("   Hello.")
     display.setTextSize(2);
-    display.println("This is just a boilerplate");
+    display.println("Welcome to the\nChannelGraph app\n\n\n\nby gib");
+    display.setTextSize(0);
 }
 
 function rssiColor(rssi){
@@ -157,7 +158,6 @@ function delayTheScans(){
 function scanAndExtract(){
 
     display.setCursor(136, 0);
-    display.setTextSize(0);
     display.println('SCANNING');
     var scanResult = wifi.scan();
     var channels = [];
@@ -186,8 +186,8 @@ function scanAndExtract(){
 
 function main(){
 
+    showSplash();
     while(bDoRun){
-
 
         if(delayTheScans()){
             
