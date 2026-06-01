@@ -66,3 +66,4 @@ Both of those commands suffer from the same issue. They don't transmit anything.
 
 ## [Reference](reference.md)
 
+Pretty much every function available in the Bruce interpreter. Sorted alphabetically
