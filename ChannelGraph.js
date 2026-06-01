@@ -18,9 +18,9 @@ display.fill(BRUCE_BGCOLOR);
 display.setTextSize(0);
 
 const scanInterval = 2000;
-const X = 20;
+const X = 10;
 const Y = 10;
-const W = 200;
+const W = 160;
 const H = 140;
 
 var bDoRun = true;
@@ -69,9 +69,9 @@ function showSplash(){
     display.fill(BRUCE_BGCOLOR);
     display.setCursor(0, 0);
     display.setTextSize(4);
-    display.println("   Hello.")
+    display.println("     Hello.")
     display.setTextSize(2);
-    display.println("Welcome to the\nChannelGraph app\n\n\n\n\nby gib");
+    display.println("  Welcome to the\n  ChannelGraph app\n\n\n\n\nby gib");
     display.setTextSize(0);
 }
 
@@ -101,9 +101,9 @@ function drawBarGraph(data){
 
         var y = Y + H - (value / max) * H;
         display.drawLine(X, Math.round(y), X + W, Math.round(y), (BRUCE_PRICOLOR >> 1) & 0x7BEF);
-        if(value % labelEvery === 0 || value === max){
+        if((value % labelEvery === 0 || value === max) && value !== 0){
 
-            display.setCursor(0, Math.round(y) - 3);
+            display.setCursor(2, Math.round(y) - 3);
             display.print(value);
         }
     }
@@ -116,8 +116,8 @@ function drawBarGraph(data){
         var bx = X + i * slotWidth + (slotWidth - barWidth) / 2;
         var by = Y + H - barHeight;
         display.drawFillRect(Math.round(bx), Math.round(by), Math.round(barWidth), Math.round(barHeight), BRUCE_PRICOLOR);
-        display.setCursor(bx + (i < 9 ? 4 : 2), Y + H + 5);
-        display.print(i + 1);
+        display.setCursor(bx + 2, Y + H + 5);
+        display.print(to_upper_case(to_hex_string(i + 1)));
     }
     display.drawLine(X, Y, X, Y + H, BRUCE_PRICOLOR);
     display.drawLine(X, Y + H, X + W, Y + H, BRUCE_PRICOLOR);
@@ -131,9 +131,9 @@ function displayNetworkList(list, nameLen){
         var channel = list[i].channel;
         var ssidShort = list[i].SSID.substring(0, nameLen);
         var rssi = list[i].RSSI;
-        display.setCursor(218, i * 8);
+        display.setCursor(176, i * 8);
 
-        var line = channel + (channel < 10 ? " " : "") + " " + ssidShort;
+        var line = to_upper_case(to_hex_string(channel)) + " " + ssidShort;
         display.print(line)
         display.setCursor(302, i * 8);
         display.setTextColor(rssiColor(rssi));
@@ -155,7 +155,7 @@ function delayTheScans(){
 
 function scanAndExtract(){
 
-    display.setCursor(136, 0);
+    display.setCursor(68, 0);
     display.println('SCANNING');
     var scanResult = wifi.scan();
     var channels = [];
@@ -191,7 +191,7 @@ function main(){
             
             var compactStuff = scanAndExtract();
             drawBarGraph(compactStuff[0]);
-            displayNetworkList(compactStuff[1], 10);
+            displayNetworkList(compactStuff[1], 18);
         }
         handleInput();
     }

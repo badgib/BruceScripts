@@ -910,6 +910,7 @@ function initialise(){
 function mainLoop(){
 
     drawSplash();
+    delay(1000);
     initialise();
     try{
         while(bDoRun){
