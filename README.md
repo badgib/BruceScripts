@@ -6,7 +6,7 @@ This is a combined repository of all the little bits of code I wrote. Some are e
 
 ### LumixControl 
 
-is a replacement for the terrible `Panasonic Image App` that's been annoying me whenever I needed a remote shutter. So I sniffed and prodded and got this little gem. It lets you snap photos, record videos and even preview your images on the screen! Yes, they're just thumbnails but it's enough to at least see if it's exposed correctly.
+is a replacement for the terrible `Panasonic Image App` that's been annoying me whenever I needed a remote shutter. So I sniffed and prodded and got this little gem. It lets you snap photos, record videos and even preview your images on the screen! Yes, they're just thumbnails but it's enough to at least see if it's exposed correctly. It also allows you to download full resolution files and videos too, directly to your device!
 
 ### TransmitMenu
 
