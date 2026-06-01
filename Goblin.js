@@ -87,7 +87,7 @@ var locations = [
 	},
 	{
 		name: "BATHROOM",
-		actions: ["DRINK PIPE WATER", "LICK TILE", "HIDE IN WALLS", "WATCH MIRROR"]
+		actions: ["DRINK DIRTY WATER", "LICK TILE", "HIDE IN WALLS", "STARE INTO MIRROR"]
 	},
 	{
 		name: "ATTIC",
@@ -95,7 +95,7 @@ var locations = [
 	},
 	{
 		name: "GARAGE",
-		actions: ["LICK BATTERY", "CHEW BONES", "RUB AGAINST WIRES", "SLEEP IN ENGINE"]
+		actions: ["LICK BATTERY", "CHEW BONES", "RUB AGAINST WIRES", "SLEEP UNDER ENGINE"]
 	},
 	{
 		name: "BEDROOM",
@@ -119,7 +119,7 @@ var actions = [
 		}
 	},
 	{
-		name: "WATCH MIRROR",
+		name: "STARE INTO MIRROR",
 		hint: "CHAOS+2 | 0",
 		run: function(){
 				
@@ -170,7 +170,7 @@ var actions = [
 
 				game.suspicion += 2;
 				game.noise += 1;
-				game.msg += "HUMAN SAW SHADOW ";
+				game.msg += "HUMAN SAW A SHADOW ";
 			}
 		}
 	},
@@ -183,7 +183,7 @@ var actions = [
 				game.heat -= 1;
 				if(game.noise < 0) game.noise = 0;
 				if(game.heat < 0) game.heat = 0;
-				game.msg += "SAFE INSIDE WALL ";
+				game.msg += "IT'S SAFE INSIDE THE WALL ";
 			}
 	},
 	{
@@ -221,7 +221,7 @@ var actions = [
 
 			game.chaos += 3;
 			game.noise += 4;
-			game.msg += "THE BUILDING FEARS YOU ";
+			game.msg += "THE BUILDING TREMBLES ";
 		}
 	},
 	{
@@ -294,7 +294,7 @@ var actions = [
 		}
 	},
 	{
-		name: "DRINK PIPE WATER",
+		name: "DRINK DIRTY WATER",
 		hint: "THIRST+3 ROT+1",
 		run: function(){
 
@@ -393,7 +393,7 @@ var actions = [
 		}
 		},
 		{
-			name: "SLEEP IN ENGINE",
+			name: "SLEEP UNDER ENGINE",
 			hint: "HP+2 HEAT+3",
 			run: function(){
 
