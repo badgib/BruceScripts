@@ -20,6 +20,10 @@ Pretty straightforward channel graph. Now you can easily see the congestion arou
 
 Is a fun little RTTTS (think Nokia ringtones) files. It can read eithe a directory of files or one file with melodies (one per line). A gimmick? Yes. Useful? Kinda - you can always make people laugh when you play a melody from doom or mario... (NokiaPlayer was a first version, it sneaked in so I'm leaving it here but it's not updated, nor good)
 
+### LunarLander
+
+Is a rendition of a classic retro game with the same name. Controls are pretty straightforward - next/prev to rotate, select to engage the thrusters and esc to quit. Goal is simple - land softly on the pad.
+
 ### Goblin
 
 Is a game in which your main goal is to annoy humans and finally win the uneven fight against them. There are two modes, move and act. You can switch between them by tapping esc key. Prev/next move between options in each mode. To quit hold esc for > 3s. Goal of the game is 20 chaos and 5 nest. Good luck!

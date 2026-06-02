@@ -1,7 +1,7 @@
 /* 
 	LunarLander for BruceFW. The goal is to land sofly. Steering is intuitive.
 	As usual - next/prev  to rotate, sel to fire thrusters and esc to quit.
-	Coming soon: Difficulity level selection
+	Coming soon: Difficulity level selection, scores, more suff to display
 
 	by gib
 */
