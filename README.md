@@ -16,6 +16,10 @@ Is an app that allows you to put all your frequently used IR and SubGHz codes in
 
 Pretty straightforward channel graph. Now you can easily see the congestion around you. Also displays a list of network SSIDs with their RSSIs and channels on the side. To quit press esc when it's not scanning
 
+### RSSIGraph
+
+Something has been missing from the tools so I wrote it myself. A simple bar graph showing RSSI of a selected SSID. Nothing too fancy. You can change the SSID by holding select for a bit due to the code scanning for networks pretty often. I don't think there's a better way, using the tools at hand that is. If you do then	please feel free to let me know about it! To quit hold escape key for a bit (same reason as mentioned above) or press escape when presented with SSID choices.
+
 ### AllPlayer
 
 Is a fun little RTTTS (think Nokia ringtones) files. It can read eithe a directory of files or one file with melodies (one per line). A gimmick? Yes. Useful? Kinda - you can always make people laugh when you play a melody from doom or mario... (NokiaPlayer was a first version, it sneaked in so I'm leaving it here but it's not updated, nor good)

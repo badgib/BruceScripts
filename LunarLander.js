@@ -8,24 +8,19 @@
 
 const DISPLAY_WIDTH = display.width();
 const DISPLAY_HEIGHT = display.height();
-
 const GRAVITY = 0.0001;
 const THRUST = 0.05;
 const ROTATE_BY = 0.1;
-
 const MAX_V_X = 0.5;
 const MAX_V_Y = 0.25;
-
 const MAIN_COLOR = BRUCE_PRICOLOR;
 const PAD_COLOR = ~BRUCE_PRICOLOR;
 const BAR_COLOR = display.color(255, 255, 0);
-
 const SEGMENT_WIDTH = 10;
 const BURN_RATE = 5;
 
 var terrain = [];
 var pad = {x: 0, y: 0, w: 30};
-
 var ship = {
     
 	x: DISPLAY_WIDTH * 0.5,
