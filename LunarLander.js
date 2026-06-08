@@ -301,9 +301,9 @@ function drawShip(){
 	var shipY2 = posY - shipSin * 4 + shipCos * 4;
 	var shipX3 = posX + shipCos * 4 - shipSin * 4;
 	var shipY3 = posY + shipSin * 4 + shipCos * 4;
-	display.drawTriangle(shipX1, shipY1, shipX2, shipY2, shipX3, shipY3, MAIN_COLOR);
 	var currVel = [Math.floor(ship.velX * 10) / 10, Math.floor(ship.velY * 10) / 10];
 	var currRot = Math.floor(ship.rotation * 10) / 10;
+	display.drawTriangle(shipX1, shipY1, shipX2, shipY2, shipX3, shipY3, MAIN_COLOR);
 	if(ship.oldHUD[0] !== currVel[0] || ship.oldHUD[1] !== currVel[1] || ship.oldHUD[2] !== currRot){
 
 		var hudText = "V: " + currVel[0] + "x" + currVel[1] + " R: " + currRot;
@@ -383,7 +383,6 @@ function update(dt){
 	if(ship.velX < -MAX_V_X)ship.velX = -MAX_V_X;
 	if(ship.velY > MAX_V_Y)ship.velY = MAX_V_Y;
 	if(ship.velY < -MAX_V_Y)ship.velY = -MAX_V_Y;
-
 	ship.x += ship.velX * delta;
 	ship.y += ship.velY * delta;
 	if(ship.x < 0) ship.x = DISPLAY_WIDTH - 1;

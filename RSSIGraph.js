@@ -79,9 +79,9 @@ function handleInput(){
 	}
 }
 
-function getMiddleForText(fontWidth, length){
+function getMiddleForText(fontSize, length){
 
-	return DISPLAY_WIDTH / 2 - length * fontWidth / 2;
+	return DISPLAY_WIDTH / 2 - length * fontSize * 6 / 2;
 }
 
 function rssiColor(rssi){
